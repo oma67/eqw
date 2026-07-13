@@ -1,0 +1,42 @@
+RewriteEngine On
+
+# Keep one canonical host and protocol.
+RewriteCond %{HTTPS} !=on [OR]
+RewriteCond %{HTTP_HOST} !^www\.exeqwork\.com$ [NC]
+RewriteRule ^ https://www.exeqwork.com%{REQUEST_URI} [R=301,L]
+
+# Remove the former preview/base path if it was crawled or shared.
+RewriteRule ^eqw/?$ / [R=301,L]
+RewriteRule ^eqw/(.*)$ /$1 [R=301,L]
+
+# Legacy URL aliases from the previous ExeQwork site and common variants.
+RewriteRule ^(home|start|index|de)(\.html)?/?$ / [R=301,L,NC]
+RewriteRule ^(kontakt|contact|kontaktieren|ansprechpartner)(\.html)?/?$ /kontakt/ [R=301,L,NC]
+RewriteRule ^(impressum|legal-notice|legal|mentions-legales)(\.html)?/?$ /impressum/ [R=301,L,NC]
+RewriteRule ^(datenschutz|privacy|privacy-statement|disclaimer|disclaimer-haftungsausschluss|confidentialite)(\.html)?/?$ /disclaimer-haftungsausschluss/ [R=301,L,NC]
+RewriteRule ^(produkte|produkt|products|product|loesungen|losungen|solutions|sap-add-ons|addons|add-ons)(\.html)?/?$ /produkte/ [R=301,L,NC]
+RewriteRule ^(beratung|consulting|service|services|sap-beratung|sap-consulting)(\.html)?/?$ /beratung/ [R=301,L,NC]
+RewriteRule ^(referenzen|references|customers|kunden|kundenstimmen|customer-voices)(\.html)?/?$ /referenzen/ [R=301,L,NC]
+RewriteRule ^(partner|partners)(\.html)?/?$ /partner/ [R=301,L,NC]
+RewriteRule ^(blog|news|aktuelles)(\.html)?/?$ /blog/ [R=301,L,NC]
+
+# Product aliases.
+RewriteRule ^(abap-search-engine|abapsearchengine|volltextsuche|fulltext-search|full-text-search|sap-volltextsuche|sap-search)(\.html)?/?$ /volltextsuche/ [R=301,L,NC]
+RewriteRule ^(concretecockpit|concrete-cockpit|concrete_cockpit)(\.html)?/?$ /concretecockpit/ [R=301,L,NC]
+RewriteRule ^(desktopconnector|desktop-connector|desktop_connector)(\.html)?/?$ /desktopconnector/ [R=301,L,NC]
+RewriteRule ^(digitaler-rechnungseingang|digital-invoice-receipt|invoice-receipt|rechnungseingang|reception-factures)(\.html)?/?$ /digitaler-rechnungseingang/ [R=301,L,NC]
+RewriteRule ^(document-classifier|documentclassifier|dokumentenklassifizierung|dokumenten-klassifizierung|machine-learning|ki-machine-learning)(\.html)?/?$ /dokumentenklassifizierung/ [R=301,L,NC]
+RewriteRule ^(droptargetcontrol|drop-target-control|droptarget|drop-target)(\.html)?/?$ /droptargetcontrol/ [R=301,L,NC]
+RewriteRule ^(ocr-server|ocrserver|ocr|texterkennung)(\.html)?/?$ /ocr-server/ [R=301,L,NC]
+RewriteRule ^(sender-determinator|sender-determination|senderdeterminator|senderdetermination|absenderbestimmung|absender-erkennung)(\.html)?/?$ /sender-determinator/ [R=301,L,NC]
+RewriteRule ^(signaturecontrol|signature-control|signatur-control|signaturcontrol|signatur|signature)(\.html)?/?$ /signaturecontrol/ [R=301,L,NC]
+RewriteRule ^(universal-process-tool|universalprocesstool|upt|process-tool|workflow-tool)(\.html)?/?$ /universal-process-tool/ [R=301,L,NC]
+RewriteRule ^(word-converter|wordconverter|documentconverter|document-converter|office-converter|pdf-converter)(\.html)?/?$ /documentconverter/ [R=301,L,NC]
+RewriteRule ^(xrechnung|x-rechnung|e-rechnung|erechnung|electronic-invoice)(\.html)?/?$ /xrechnung/ [R=301,L,NC]
+RewriteRule ^(waagenintegration-waagencontrol|waagenintegration|waagen-control|waagencontrol|scale-integration)(\.html)?/?$ /waagenintegration-waagencontrol/ [R=301,L,NC]
+
+# Legacy product URLs nested below product/solution sections.
+RewriteRule ^(produkte|produkt|products|product|loesungen|losungen|solutions)/(.+)$ /$2 [R=301,L,NC]
+
+# Normalize direct index.html URLs.
+RewriteRule ^(.*/)?index\.html$ /$1 [R=301,L]
