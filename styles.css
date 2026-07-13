@@ -74,7 +74,7 @@ a {
   width: 154px;
   height: 38px;
   display: block;
-  background: url("/assets/brand/exeqwork-logo-full.png") center / contain no-repeat;
+  background: url("assets/brand/exeqwork-logo-full.png") center / contain no-repeat;
 }
 
 .nav-links {
