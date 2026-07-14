@@ -597,6 +597,27 @@ small,
   object-fit: cover;
 }
 
+.product-video-section {
+  padding-top: 12px;
+}
+
+.product-video-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  gap: 32px;
+  align-items: center;
+}
+
+.product-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  border: 1px solid rgba(22, 69, 120, 0.16);
+  border-radius: 22px;
+  background: #eef5fb;
+  box-shadow: var(--shadow);
+}
+
 .highlight-copy p {
   font-size: 20px;
   line-height: 1.45;
@@ -939,6 +960,7 @@ small,
   .split-section,
   .legal-layout,
   .highlight-grid,
+  .product-video-grid,
   .cta-grid {
     grid-template-columns: 1fr;
     gap: 36px;
