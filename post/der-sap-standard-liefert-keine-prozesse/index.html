@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Der SAP-Standard liefert keine Prozesse | ExeQwork Archiv</title>
+    <meta name="description" content="Warum SAP-Belege noch keine geführten Geschäftsprozesse ergeben und welche Architektur ein Prozesswerkzeug braucht." />
+    <link rel="canonical" href="https://www.exeqwork.com/post/der-sap-standard-liefert-keine-prozesse/" />
+    <link rel="stylesheet" href="../../styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="../../" aria-label="ExeQwork Startseite"><img class="logo-image" src="../../assets/brand/exeqwork-logo-full.png" alt="ExeQwork" /></a>
+        <nav class="nav-links" aria-label="Hauptnavigation">
+          <a href="../../produkte/">Produkte</a>
+          <a href="../../beratung/">Beratung</a>
+          <a href="../../referenzen/">Referenzen</a>
+          <a href="../../kontakt/">Kontakt</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <article class="article-shell container reveal">
+        <p class="eyebrow">SAP-Prozesse</p>
+        <h1>Der SAP-Standard liefert keine Prozesse</h1>
+        <div class="article-meta"><span>21. Nov. 2018 · 4 Min.</span><span>Aktualisiert: 5. Aug. 2019</span></div>
+        <p class="lead">Warum SAP-Belege noch keine geführten Geschäftsprozesse ergeben und welche Architektur ein Prozesswerkzeug braucht.</p>
+        <div class="article-downloads">
+          <a class="btn btn-secondary" href="../../assets/blog/originals/der-sap-standard-liefert-keine-prozesse.pdf">Originalartikel als PDF</a>
+        </div>
+        <figure class="article-media article-media-main">
+          <img src="../../assets/blog/sap-standard-de.jpg" alt="Archivbild zum Artikel Der SAP-Standard liefert keine Prozesse" loading="lazy" />
+        </figure>
+        <div class="article-body">
+<p>Es ist viel die Rede von „Prozessen“ im SAP-Umfeld. Es gibt Geschäftsprozesse, „Business Process Monitoring“, Softwareentstehungsprozesse, Softwarewartungsprozesse, Transportprozesse, Migrationsprozesse und viele mehr. Kaum jemand macht sich noch Gedanken darüber, was dieser Begriff für Software und ihre Verwendung bedeutet. Einer der prominentesten Geschäftsprozesse im SAP ERP ist der Wareneingangsprozess. Dieser besteht aus den folgenden Schritten:</p>
+<ul><li>Eine Bestellung wird ausgelöst und als Beleg im SAP angelegt</li><li>Die Bestellung wird an den Lieferanten versendet</li><li>Die Ware wird geliefert, erfasst und ein Wareneingangsbeleg wird im SAP ERP angeleg</li></ul>
+<p>Dieses Beispiel zeigt alle wesentlichen Eigenschaften eines Geschäftsprozesses:</p>
+<ul><li>Der Prozess hat einen zeitlichen Verlauf</li><li>Der Prozess hat eine Richtung, d.h. es lässt sich ein Fortschritt messen</li><li>Der Prozess hat zu jedem Zeitpunkt einen definierten Zustand</li><li>Der Prozess hat verschiedene Bearbeiter; diese können seriell oder parallel tätig sein</li><li>Der Prozess führt ein Protokoll mit sich</li><li>Vergangene Prozesszustände müssen ggf. wiederherstellbar sein</li><li>Es können SAP-Belege einbezogen werden oder erstellt werden (Bestellung, Materialbeleg, evtl. weitere)</li><li>Es sind physische Dokumente (Formulare) einbezogen (z.B. Lieferschein, Bestellung)</li></ul>
+<p>Es gibt eine große Zahl von weiteren, ähnlichen Geschäftsprozessen, die im Allgemeinen über das SAP ERP abgewickelt werden. Als Beispiele seien genannt:</p>
+<ul><li>Rechnungseingang</li><li>Reklamationseingang</li><li>Vertriebsprozess (Kundenanfrage-&gt;Angebot-&gt;Auftrag)</li><li>Inventarisierung</li></ul>
+<h2>Der SAP-Standard liefert keine Prozesse</h2>
+<p>Als Geschäftsprozesse sind die genannten Prozesse jedoch nur auf organisatorischer Ebene im SAP ERP vorhanden. Der SAP-Standard liefert lediglich die Belege, zwischen denen die Prozesse ablaufen. Beim Wareneingang sind es z.B. der Bestellbeleg und der Materialbeleg, die im Laufe des Prozesses erstellt werden. Die Abwicklung des Prozesses ist dabei allein dem Benutzer überlassen.</p>
+<p>Termine, Fortschritt, Zustand, involvierte Bearbeiter, Dokumente müssen vom Benutzer verwaltet werden. Es gibt keine zentrale Stelle, an der der Benutzer eine Übersicht der laufenden Prozesse gewinnen kann. Monitoring der Prozesse ist zeitaufwendig, umständlich und unzuverlässig, da eine Vielzahl von Datenquellen (Belegen) zur Auswertung herangezogen werden müssen. Bei der Prozessabwicklung kommt es zu häufigen Medienbrüchen: Es wird kommuniziert über Email, Telefon, Kurznachrichtendienste. Diese Kommunikation bleibt undokumentiert. Im Nachhinein ist es schwer, Entscheidungen nachzuvollziehen.</p>
+<p>Der SAP Standard lässt hier offenbar – absichtlich oder unabsichtlich – eine Lücke erstaunlichen Ausmaßes.</p>
+<h2>Die Anforderungen an ein Prozessabwicklungswerkzeug</h2>
+<p>Will man ein Softwarewerkzeug schaffen, um die Geschäftsprozessabwicklung zu unterstützen, so ist es zielführend von speziellen Anwendungsfällen zu abstrahieren. D.h. man betrachtet z.B. die Anwendungsfälle „Rechnungseingang“ und „Wareneingang“ und versucht die gemeinsamen Eigenschaften und Anforderungen zu isolieren.</p>
+<h2>Businessobjekt Prozess</h2>
+<p>Es hat sich als sinnvoll erwiesen, den Prozess selbst als Businessobjekt zu betrachten.</p>
+<h2>Prozesslaufzeit</h2>
+<p>Prozesse können manuell vorangetrieben werden, d.h. vom Benutzer in einer Dialogtransaktion gesteuert, sie können aber auch automatisch fortschreiten.</p>
+<p>Bei den gängigen Geschäftsprozessen kommen häufig beide Formen des „Vorantreibens“ vor. Daraus folgt, dass zum automatischen Antreiben der Prozesse eine Art „Prozesslaufzeit“ benötigt wird.</p>
+<h2>Monitoring versus Cockpit</h2>
+<p>Prozesszustand und -Fortschritt müssen überwachbar sein. Dazu wird eine Monitoringtransaktion benötigt, die alle wesentlichen Kennzahlen ausweist, sowie eine Sicht auf die Detaildaten des Prozesses bereitstellt. Erlaubt die Monitoringtransaktion außerdem die Steuerung des Prozesses, d.h. das Vorantreiben des Prozesses und das Ändern der Prozessdaten, so sprechen wir von Prozesscockpit.</p>
+<p>Aus Softwaresicht kann Monitor und Cockpit dieselbe Transaktion sein, die unterschiedlich berechtigt wird.</p>
+<h2>Softwarearchitektur eines Prozessabwicklungswerkzeugs</h2>
+<p>Wir gehen aus von einer Entwicklung in ABAP OO, da sich aus der ABAP Laufzeit entscheidende Vorteile ergeben.</p>
+<h2>Monitoring und Cockpit</h2>
+<p>Das Monitoring liefert dem Anwender alle nötigen Informationen über Fortschritt, Anzahl und Zustand der Prozesse. Vom Basismonitor aus sollte das Protokoll jedes einzelnen Prozesses einsehbar sein. Außerdem sollte der Basismonitor den Neustart und das Debuggen eines einzelnen Prozesses erlauben und erfüllt insofern bereits einige, wenige Cockpit-Funktionen. Das Monitoring ist vollständig von Laufzeit und Handlerklasse entkoppelt. Es kann in jeder beliebigen UI-Technik implementiert werden (UI5, Mobile, SAPGUI, Windows).</p>
+<h2>Anwendungscockpit</h2>
+<p>Das Anwendungscockpit lehnt sich inhaltlich an den Monitor an, bietet darüber hinaus aber Sichten auf Anwendungsdaten und stellt auch anwendungsspezifische Funktionen bereit. Das UI stellt eine Erweiterung des Basismonitors dar. Die Umsetzung eines Cockpits lässt sich in sehr kurzer Zeit bewerkstelligen.</p>
+<h2>Handler-Klasse</h2>
+<p>Grundlage aller Anwendungsprozesse ist ein abstrakter Prozess ohne Anwendungsbezug. Dieser wird als einfache ABAP-OO Klasse (Handlerklasse) implementiert mit einigen, wenigen Eigenschaften:</p>
+<ul><li>Die Klasse liefert ihre eigene Persistenz, d.h. liest sich von bzw. schreibt sich in die Datenbank</li><li>Die Klasse liefert einen Sperrmechanismus, so dass immer nur ein Änderer zugelassen wird</li><li>Die Klasse schreibt ihr eigenes Protokoll</li><li>Die Klasse hat eine dezidierte Callback-Methode, die für „dunkle“ Abarbeitung von der Prozesslaufzeit aufgerufen wird</li><li>Die Klasse ist vererbbar</li></ul>
+<p>Von dieser abstrakten Prozessklasse leiten alle anwendungsspezifischen Klassen ab.</p>
+<h2>Late Binding</h2>
+<p>Die Prozesslaufzeit sucht zur Ausführungszeit in einer Registrierungstabelle nach der Handlerklasse, die zum jeweiligen Prozess gehört (z.B. Handlerklasse zum Wareneingangsprozess). Die Handlerklasse wird zur Ausführungszeit instanziert und ihre Callback-Methode wird von der Laufzeit aufgerufen.</p>
+<p>Dieses Konzept der späten Bindung (Late Binding) lehnt sich an das Prinzip des Component Object Models (COM) an, das von Microsoft bereits 1992 etabliert wurde und bis heute in der neuen Windows 10 Runtime (WinRT) zum Einsatz kommt.</p>
+<h2>Die Lösung: das Universal Process Tool</h2>
+<p>Für Unternehmen kann es sehr lohnenswert sein, die „Prozesslücke“ auf diese Weise zu schließen:</p>
+<ul><li>Es wird ein zentraler Einstiegspunkt geschaffen aus Prozesssicht, was häufig auch der Abteilungssicht entspricht</li><li>Prozessdurchlaufzeiten werden verkürzt und messbar</li><li>Fehler werden vollständig protokolliert</li><li>Prozesse werden transparent: Reporting lässt sich als einfache Erweiterung des Monitorings umsetzen</li><li>Die Projektumsetzungszeiten sind optimiert durch den hohen Grad an Wiederverwendung einmal vorhandener Softwarekomponenten</li><li>Die Software passt sich dem Geschäftsprozess an und nicht umgekehrt</li></ul>
+<p>Das Konzept ist zukunftssicher, da es sich mit minimalem Aufwand an neue UI-Technologien anpasst.</p>
+<p>Das Prinzip lässt sich auch auf technische Prozesse wie Migrationen oder asynchrone, parallelisierte Massenverbuchungen anwenden</p>
+<p>Möchten Sie mehr zu unserer Lösung erfahren?</p>
+        </div>
+        <div class="article-backlinks">
+          <a class="btn btn-secondary" href="../../blog/">Archiv</a>
+          <a class="btn btn-primary" href="../../universal-process-tool/">Universal Process Tool ansehen</a>
+        </div>
+      </article>
+    </main>
+    <footer class="site-footer"><div class="container footer-grid"><p>&copy; <span id="year"></span> ExeQwork GmbH.</p><div><a href="../../impressum/">Impressum</a><a href="../../disclaimer-haftungsausschluss/">Datenschutz</a></div></div></footer>
+    <script src="../../script.js"></script>
+  </body>
+</html>

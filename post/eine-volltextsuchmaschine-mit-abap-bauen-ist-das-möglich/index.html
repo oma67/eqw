@@ -2,13 +2,726 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="robots" content="noindex" />
-    <meta http-equiv="refresh" content="0; url=../../volltextsuche/" />
-    <link rel="canonical" href="../../volltextsuche/" />
-    <title>Weiterleitung | ExeQwork</title>
-    <script>location.replace("../../volltextsuche/");</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eine Volltextsuchmaschine mit ABAP bauen: Ist das möglich? | ExeQwork Archiv</title>
+    <meta name="description" content="Ein technischer Artikel über Volltextsuche, OCR-Fehler, Levenshtein-Distanz und Suchstrukturen in ABAP." />
+    <link rel="canonical" href="https://www.exeqwork.com/post/eine-volltextsuchmaschine-mit-abap-bauen-ist-das-möglich/" />
+    <link rel="stylesheet" href="../../styles.css" />
   </head>
   <body>
-    <p><a href="../../volltextsuche/">Weiter zur Volltextsuche</a></p>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="../../" aria-label="ExeQwork Startseite"><img class="logo-image" src="../../assets/brand/exeqwork-logo-full.png" alt="ExeQwork" /></a>
+        <nav class="nav-links" aria-label="Hauptnavigation">
+          <a href="../../produkte/">Produkte</a>
+          <a href="../../beratung/">Beratung</a>
+          <a href="../../referenzen/">Referenzen</a>
+          <a href="../../kontakt/">Kontakt</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <article class="article-shell container reveal">
+        <p class="eyebrow">ABAP Search Engine</p>
+        <h1>Eine Volltextsuchmaschine mit ABAP bauen: Ist das möglich?</h1>
+        <div class="article-meta"><span>29. Jan. 2020 · 14 Min.</span><span>Aktualisiert: 19. Feb. 2020</span></div>
+        <p class="lead">Ein technischer Artikel über Volltextsuche, OCR-Fehler, Levenshtein-Distanz und Suchstrukturen in ABAP.</p>
+        <div class="article-downloads">
+          <a class="btn btn-secondary" href="../../assets/blog/originals/eine-volltextsuchmaschine-mit-abap-bauen-ist-das-moeglich.pdf">Originalartikel als PDF</a>
+        </div>
+        <figure class="article-media article-media-main">
+          <img src="../../assets/blog/abap-search-hero.jpg" alt="Archivbild zum Artikel Eine Volltextsuchmaschine mit ABAP bauen" loading="lazy" />
+        </figure>
+        <div class="article-body">
+<h2>Teil 1: Die Levenshtein-Distanz</h2>
+<p>Datenbankselects zu programmieren ist für ABAP-Entwickler eine alltägliche Aufgabe. Seien es Kundenerweiterungen, seien es Reports: Fast bei jeder Entwicklungsaufgabe sieht man sich mit Datenbankabfragen konfrontiert. Für manche Entwickler ist die sogenannte Reportentwicklung gar der Hauptbestandteil ihrer Tätigkeit. Diese Art von Datenbankabfragen zeichnen sich dadurch aus, dass es zu jedem select-Statement ein wohldefiniertes, eindeutiges Ergebnis gibt.</p>
+<p>Beispiel: Der Benutzer möchte zu einem Vertriebsbeleg, dessen Nummer er kennt und von dem er weiß, dass er existiert, das Erstellungsdatum ermitteln. Der Entwickler wird dafür folgendes select-Statement erstellen:</p>
+<pre><code>select erdat from vbak into lv_erdat where vbeln = p_vbeln.</code></pre>
+<p>p_vbeln stellt dabei die Benutzereingabe dar. Wenn die Anwendung keinen Fehler enthält, kann der Benutzer für diese Abfrage genau ein Ergebnis erwarten. Würde die Abfrage kein Ergebnis liefern, so hieße das, dass entweder der Beleg (noch) nicht existiert, d.h. der Benutzer hat sich geirrt, oder dass die Belegdaten inkonsistent wären, d.h. ein Fehler in der Anwendung vorläge.</p>
+<p>Anders stellt sich die Situation dar, wenn man es statt mit SAP-Belegen mit Textdokumenten zu tun hat. Textdokumente können entweder im SAP-System entstehen oder von außen in das System eingebracht werden. Man wird eher selten eine Volltextsuche auf Textdokumente ausführen, die im SAP-System entstanden sind, denn es handelt sich ja um Daten, die man auch direkt über Datenbankabfragen ermitteln kann. Dokumente, die von außen in das System kommen unterscheiden sich in einem Punkt fundamental von denen, die aus Systemdaten erstellt wurden: Diese Dokumente enthalten statistische Fehler.</p>
+<p>Beispiel: Ein Lieferant sendet per Post eine Rechnung. Die Rechnung wird beim Empfänger eingescannt und in einem Filesystemordner abgelegt, um später durch einen OCR-Server weiterverarbeitet zu werden. OCR-Algorithmen arbeiten häufig mit neuronalen Netzen und liefern Ergebnisse, die mit einem zufälligen Fehler behaftet sind. In den Ergebnisdateien des OCR-Servers kann man nach Wörtern oder mehreren Wörtern suchen. Im Unterschied zur Datenbanksuche liefert diese Suche kein wohldefiniertes Ergebnis. Schickt der Lieferant etwa eine Rechnung mit der Artikelnummer 12345, so kann es sein, dass der OCR-Algorithmus 12349 erkennt. Sucht man nun nach 12345, so würde eine Gleichheitsprüfung der Strings fehlschlagen und die Suche würde kein Ergebnis liefern. Dennoch würde der Benutzer ein Ergebnis erwarten.</p>
+<p>Das bedeutet, dass man ein Maß für Ähnlichkeit von Wörtern - oder allgemeiner Strings - benötigt. Bekannt sind der Hamming-Abstand und die Levenshtein-Distanz oder auch Edit-Distanz. Der Hamming-Abstand zählt im wesentlichen die Anzahl der verschiedenen Zeichen in der Wörtern. Die Levenshtein-Distanz zählt die minimale Anzahl von Edit-Operationen, die nötig sind, um das eine Wort in das andere zu überführen. Dabei sind die Edit-Operationen</p>
+<p>Die Levenshtein-Distanz hat die Eigenschaften einer Metrik, erfüllt also insbesondere die Dreiecksungleichung. Dass die Dreiecksungleichung erfüllt ist, folgt direkt aus der Minimalität der Levenshtein-Distanz.</p>
+<p>Der Levenshtein Algorithmus wird häufig implementiert mit Hilfe sogenannter dynamischer Programmierung. Dazu ordnet man die zu vergleichenden Wörter in einem Tableau an wie im folgenden dargestellt:</p>
+<figure class="article-media"><img src="../../assets/blog/abap-search-levenshtein.jpg" alt="Levenshtein-Matrix aus dem alten Artikel" loading="lazy" /></figure>
+<p>Die zweite Zeile liest man folgendermaßen: Um ein leeres Wort in &quot;j&quot; abzubilden, benötigt man eine Operation, nämlich das Einfügen von &quot;j&quot;. Um ein leeres Wort in &quot;ju&quot; abzubilden, benötigt man 2 Operation, nämlich Einfügen von &quot;j&quot; und Einfügen von &quot;u&quot; usw.</p>
+<p>Betrachten wir das 5-5-Element der Matrix. Das 5-5-Element der Matrix hat den Wert 1, weil das Zeichen &quot;l&quot; durch &quot;n&quot; ersetzt werden muss. Allgemein kommt das Element (i,j) zustande als</p>
+<p>min{Element(i-1,j-1)+1, Element(i,j-1)+1,Element(i-1,j)+1}, falls die Zeichen verschieden sind</p>
+<p>und</p>
+<p>Element(i-1,j-1), falls die Zeichen gleich sind.</p>
+<p>Verfügt man über eine ABAP-Implementierung von M x N Matrizen, so lässt der Levenshtein-Algorithmus einfach in ABAP implementieren.</p>
+<h2>Hier eine Beispielimplementierung:</h2>
+<pre><code>METHOD calc_levenshtein_dist.
+DATA: lo_matrix TYPE REF TO /cow/cl_ase_matrix_int,
+lo_vektor_s1 TYPE REF TO /cow/cl_ase_matrix_char1,
+lo_vektor_s2 TYPE REF TO /cow/cl_ase_matrix_char1,
+m TYPE int4,
+n TYPE int4,
+k TYPE int4,
+l TYPE int4,
+a TYPE int4,
+b TYPE int4,
+r TYPE int4,
+s TYPE int4,
+r_ TYPE int4,
+s_ TYPE int4,
+o TYPE int4,
+p TYPE int4,
+c TYPE c,
+lv_value TYPE int4,
+lv_value_0_0 TYPE int4,
+lv_value_1_0 TYPE int4,
+lv_value_0_1 TYPE int4,
+lv_costs TYPE int4,
+lv_prefixlen TYPE int4.
+o = STRLEN( iv_s1 ).
+p = STRLEN( iv_s2 ).
+m = o + 1.
+n = p + 1.
+* Create matrix
+CREATE OBJECT lo_matrix
+EXPORTING
+iv_m = m
+iv_n = n.
+* Fill first column
+DO m TIMES.
+k = sy-index.
+l = k - 1.
+lo_matrix-&gt;set_i_j( iv_i = k
+iv_j = 1
+iv_value = l ).
+ENDDO.
+* Fill first row
+DO n TIMES.
+k = sy-index.
+l = k - 1.
+lo_matrix-&gt;set_i_j( iv_i = 1
+iv_j = k
+iv_value = l ).
+ENDDO.
+* Create the word s1 vector
+CREATE OBJECT lo_vektor_s1
+EXPORTING
+iv_m = m
+iv_n = 1.
+* Set space
+lo_vektor_s1-&gt;set_i_j( iv_i = 1
+iv_j = 1
+iv_value = space ).
+* Fill the vector
+DO o TIMES.
+k = sy-index.
+l = k - 1.
+c = iv_s1+l(1).
+k = k + 1.
+lo_vektor_s1-&gt;set_i_j( iv_i = k
+iv_j = 1
+iv_value = c ).
+ENDDO.
+* Create the word s2 vector
+CREATE OBJECT lo_vektor_s2
+EXPORTING
+iv_m = 1
+iv_n = n.
+* Set space on first pos
+lo_vektor_s2-&gt;set_i_j( iv_i = 1
+iv_j = 1
+iv_value = space ).
+* Fill the vector
+DO p TIMES.
+k = sy-index.
+l = k - 1.
+c = iv_s2+l(1).
+k = k + 1.
+lo_vektor_s2-&gt;set_i_j( iv_i = 1
+iv_j = k
+iv_value = c ).
+ENDDO.
+* Fill the rows
+DO o TIMES.
+r = sy-index.
+r_ = sy-index + 1.
+DO p TIMES.
+s = sy-index.
+s_ = sy-index + 1.
+IF lo_vektor_s1-&gt;get_i_j( iv_i = r_ iv_j = 1 ) NE lo_vektor_s2-&gt;get_i_j( iv_i = 1 iv_j = s_ ).
+lv_value_0_0 = lo_matrix-&gt;get_i_j( iv_i = r iv_j = s ).
+lv_value_1_0 = lo_matrix-&gt;get_i_j( iv_i = r_ iv_j = s ).
+lv_value_0_1 = lo_matrix-&gt;get_i_j( iv_i = r iv_j = s_ ).
+lv_value = /cow/cl_ase_util=&gt;min_3( iv_1 = lv_value_0_0
+iv_2 = lv_value_1_0
+iv_3 = lv_value_0_1 ) + 1.
+lo_matrix-&gt;set_i_j( iv_i = r_ iv_j = s_ iv_value = lv_value ).
+ELSE.
+lv_value = lo_matrix-&gt;get_i_j( iv_i = r iv_j = s ).
+lo_matrix-&gt;set_i_j( iv_i = r_ iv_j = s_ iv_value = lv_value ).
+ENDIF.
+ENDDO.
+rv_ = lo_matrix-&gt;get_i_j( iv_i = m iv_j = n ).
+ENDMETHOD.</code></pre>
+<p>Wer diese Implementierung verwenden möchte, muss lediglich die Matrixklassen durch eigene ersetzen. Die Matrizen werden nur zum Speichern der Werte verwendet. D.h. es ist keine Implementierung von Matrixmultiplikationen o.ä. nötig.</p>
+<p>Man mache sich klar, dass der Algorithmus eine Laufzeit der Größenordnung O(m*n) hat, wenn die zwei Wörter n bzw. m Zeichen enthalten.</p>
+<p>Damit haben wir den ersten Schritt für die Implementierung einer Volltextsuche in ABAP getan. Wir können die Ähnlichkeit von zwei Wörtern messen. Im zweiten Teil dieses Blogbeitrags werden wir untersuchen, welche Datenbankstrukturen nötig sind, um Wörter und Dokumente zu speichern und wie man performant auf diesen Strukturen suchen kann, obwohl der Levenshtein-Algorithmus eine Laufzeit von O(m*n) hat.</p>
+<p>Teil 2: Erzeugen des VP-Trees</p>
+<p>Um etwa schnelle Volltextsuchen auf eingescannten Dokumenten zu ermöglichen, müssen die Dokumente indiziert werden. D.h. wir speichern alle Wörter der Dokumente in einer DB-Tabelle, der Wörterbuchtabelle und die Dokumente selbst z.B. in einem Archiv. Die Beziehung Wort ↔ Dokument ID speichern wir in einer eigenen DB-Tabelle, der Wort↔Dokumentmatrix.</p>
+<h2>Wörterbuchtabelle:</h2>
+<figure class="article-media"><img src="../../assets/blog/abap-search-word-table.jpg" alt="Wörterbuchtabelle aus dem alten Artikel" loading="lazy" /></figure>
+<h2>Wort↔Dokumentmatrix:</h2>
+<figure class="article-media"><img src="../../assets/blog/abap-search-doc-matrix.jpg" alt="Wort-Dokumentmatrix aus dem alten Artikel" loading="lazy" /></figure>
+<p>Der Prozess des Dokumentindizierens ist simpel. Für jedes eingescannte Dokument, das den OCR Prozess durchlaufen hat, wird das Dokument im Archiv abgelegt. Dann werden die extrahierten Wörter (nach translate to upper case) im Wörterbucg gespeichert und die Relationen Wort↔Dokument in der Wort↔Dokumentmatrix. Eine ähnliche Vorgehensweise funktioniert auch für Inhalte von Datenbanktabellen. In unserem Umfeld hat es immer eine spezielle Bedeutung, wenn wir von &quot;Prozess&quot; reden. Ein Prozess ist jeweils ein Prozess im Sinne des Universal Process Tools oder einer Kette solcher Prozesse. Natürlich kann dieses Prinzip auch ohne Universal Process Tool angewendet werden.</p>
+<p>Mit Hilfe der Levenshtein Distanz könnten nun bereits Ähnlichkeitssuchen auf dem Wörterbuch stattfinden. Über die Wort↔Dokumentmatrix können dann die zugehörigen Dokumente ermittelt werden. Leider ist der Wortvergleich per Edit-Distance sehr inperformant aus oben genannten Gründen. Man mache sich klar, dass bei einer Suche das gesuchte Wort zunächst mit allen Wörtern des Wörterbuchs verglichen werden muss. Daher ist es wünschenswert, das Wörterbuch möglichst klein zu halten. Dafür gibt es verschiedene Verfahren, etwa alle Stop Words eliminieren, nur Großschreibung verwenden, auf den Wortstamm reduzieren (keine gebeugten Wörter) usw. Darauf gehen wir nicht weiter ein. All diese Verfahren reichen dennoch nicht aus, generisch eine performante Suche sicherzustellen.</p>
+<p>Um eine performante Suche zu erreichen, indizieren wir die Wörter im Wörterbuch durch einen sogenannten VP-Tree (Vantage Point Tree). Die Idee des VP-Trees besteht darin, eine Teilmenge eines metrischen Raums so zu partitionieren, dass man meistens entweder nur innerhalb eines metrischen Balls um einen gegebenen Punkt (vantage point) suchen muss oder nur außerhalb. Sind die Punkte innerhalb des Balles und außerhalb des Balles etwa gleich verteilt, erreicht man so annähernd eine binäre Suche, deren Kosten log(n) sind im Gegensatz zu n bei der linearen Suche. In unserem Fall ist die Metrik d(wort1, wort2) := levenshtein_dist(wort1,wort2). Der VP-Tree wird dann folgendermaßen aufgebaut:</p>
+<p>1. Wir suchen zufällig ein Wort w1 aus dem Wörterbuch aus und berechnen d(w1,w) für alle w im Wörterbuch ungleich w1. Wir wählen einen Radius r, so dass etwa die Hälfte aller Wörter w im Ball mit Radius r um w1 liegt, und damit die andere Hälfte außerhalb des Balles liegt (Medianradius). Alle Wörter, die innerhalb des Balles liegen, werden zukünftig im linken Zweig unter dem ersten VP liegen, während die anderen im rechten Zweig unter dem ersten VP liegen. Die nächsten zwei VPs (den rechten und den linken) erhalten wir, indem wir das Verfahren auf die beiden disjunkten Teilmengen anwenden, d.h. wir suchen jeweils VPs für alle Punkte im Ball um den ersten VP und für alle Punkte außerhalb des Balles um den ersten VP. Dieses Verfahren interieren wir, bis keine Punkte mehr übrig sind. Das Ergebnis speichern wir in unserer VP-Tabelle.</p>
+<h2>VP-Tree Tabelle:</h2>
+<figure class="article-media"><img src="../../assets/blog/abap-search-vp-tree.jpg" alt="VP-Tree Tabelle aus dem alten Artikel" loading="lazy" /></figure>
+<h2>Im folgenden das komplette Listing der Vantage Tree Builder Klasse:</h2>
+<p>class /COW/CL_ASE_VP_TREE_BUILDER definition</p>
+<p>public</p>
+<p>final</p>
+<p>create public .</p>
+<p>*&quot;* public components of class /COW/CL_ASE_VP_TREE_BUILDER</p>
+<p>*&quot;* do not include other source files here!!!</p>
+<p>public section.</p>
+<p>methods BUILD</p>
+<p>raising</p>
+<p>/COW/CX_ROOT .</p>
+<p>methods CONSTRUCTOR</p>
+<p>importing</p>
+<p>!IV_SEARCH_AREA type /COW/ASE_SEARCH_AREA .</p>
+<p>methods CREATE_NODE</p>
+<p>importing</p>
+<p>!IV_PA_NODE_ID type /COW/NODE_ID</p>
+<p>!IV_LEFT_RIGHT type /COW/ASE_LEFT_RIGHT_FLAG</p>
+<p>changing</p>
+<p>!CT_WORDS type /COW/ASE_T_WORD_S</p>
+<p>raising</p>
+<p>/COW/CX_ROOT .</p>
+<p>class-methods STATIC_NODE_ID_CREATE</p>
+<p>returning</p>
+<p>value(RV_) type CHAR32 .</p>
+<p>protected section.</p>
+<p>*&quot;* protected components of class /COW/CL_ASE_VP_TREE_BUILDER</p>
+<p>*&quot;* do not include other source files here!!!</p>
+<p>private section.</p>
+<p>*&quot;* private components of class /COW/CL_ASE_VP_TREE_BUILDER</p>
+<p>*&quot;* do not include other source files here!!!</p>
+<p>data MV_SEARCH_AREA type /COW/ASE_SEARCH_AREA .</p>
+<p>data MT_WORDS type /COW/ASE_T_WORD_S .</p>
+<p>methods RESET .</p>
+<p>methods CREATE_ROOT_NODE</p>
+<p>raising</p>
+<p>/COW/CX_ROOT .</p>
+<p>class-methods DIST_LIST_CALC_MEAN</p>
+<p>importing</p>
+<p>!IT_DIST type /COW/ASE_T_DISTANCE</p>
+<p>returning</p>
+<p>value(RV_) type /COW/ASE_RATIONAL .</p>
+<p>class-methods DIST_LIST_CALC_VARIANCE</p>
+<p>importing</p>
+<p>!IT_DIST type /COW/ASE_T_DISTANCE</p>
+<p>returning</p>
+<p>value(RV_) type /COW/ASE_RATIONAL .</p>
+<p>methods WORD_CALC_VARIANCE</p>
+<p>importing</p>
+<p>!IV_WORD type STRING</p>
+<p>!IT_WORDS type /COW/ASE_T_WORD_S</p>
+<p>returning</p>
+<p>value(RV_) type /COW/ASE_RATIONAL</p>
+<p>raising</p>
+<p>/COW/CX_ROOT .</p>
+<p>methods GET_RANDOM_WORD</p>
+<p>importing</p>
+<p>!IT_WORDS type /COW/ASE_T_WORD_S</p>
+<p>returning</p>
+<p>value(RV_) type /COW/ASE_WORD .</p>
+<p>methods GET_VARIANT_WORD</p>
+<p>importing</p>
+<p>!IT_WORDS type /COW/ASE_T_WORD_S</p>
+<p>returning</p>
+<p>value(RV_) type /COW/ASE_WORD .</p>
+<pre><code>ENDCLASS.
+CLASS /COW/CL_ASE_VP_TREE_BUILDER IMPLEMENTATION.
+METHOD build.
+me-&gt;reset( ).
+me-&gt;create_root_node( ).
+ENDMETHOD.
+METHOD constructor.
+mv_search_area = iv_search_area.
+ENDMETHOD.
+METHOD create_node.
+DATA: lv_word_s TYPE string,
+lv_word_s1 TYPE string,
+lv_word_s2 TYPE string,
+lv_word_s3 TYPE string,
+lv_median TYPE int4,
+lv_median_low TYPE int4,
+lv_median_up TYPE int4,
+lv_median_opt TYPE int4,
+ls_node TYPE /cow/ase_vp_tree,
+lv_len TYPE int4,
+lv_from TYPE int4,
+lt_words_left TYPE /cow/ase_t_word_s,
+lt_words_right TYPE /cow/ase_t_word_s,
+lv_dist TYPE int4,
+lv_tabix TYPE sy-tabix,
+lv_var1 TYPE /cow/ase_rational,
+lv_var2 TYPE /cow/ase_rational,
+lv_var3 TYPE /cow/ase_rational,
+lv_var TYPE /cow/ase_rational,
+lv_median_dist_up TYPE int4,
+lv_median_dist_low TYPE int4,
+lv_string TYPE string.
+FIELD-SYMBOLS: &lt;ls_word&gt; TYPE /cow/ase_s_word_s.
+lv_word_s = me-&gt;get_random_word( ct_words ).
+* lv_word_s2 = me-&gt;get_random_word( ct_words ).
+* lv_word_s3 = me-&gt;get_random_word( ct_words ).</code></pre>
+<p>*</p>
+<pre><code>* lv_var1 = me-&gt;word_calc_variance( iv_word = lv_word_s1 it_words = ct_words ).
+* lv_var2 = me-&gt;word_calc_variance( iv_word = lv_word_s2 it_words = ct_words ).
+* lv_var3 = me-&gt;word_calc_variance( iv_word = lv_word_s3 it_words = ct_words ).</code></pre>
+<p>*</p>
+<pre><code>* lv_var = /cow/cl_ase_util=&gt;max_3_rational( iv_1 = lv_var1 iv_2 = lv_var2 iv_3 = lv_var3 ).</code></pre>
+<p>*</p>
+<pre><code>* CASE lv_var.
+* WHEN lv_var1.
+* lv_word_s = lv_word_s1.
+* WHEN lv_var2.
+* lv_word_s = lv_word_s2.
+* WHEN lv_var3.
+* lv_word_s = lv_word_s3.
+* ENDCASE.</code></pre>
+<p>*</p>
+<pre><code>* lv_word_s = me-&gt;get_variant_word( ct_words ).
+IF lv_word_s IS INITIAL.
+RETURN.
+ENDIF.
+* Calc distance for all words in set
+LOOP AT ct_words ASSIGNING &lt;ls_word&gt;.
+lv_string = &lt;ls_word&gt;-word.
+&lt;ls_word&gt;-radius = /cow/cl_ase_util=&gt;calc_levenshtein_dist( iv_s1 = lv_word_s iv_s2 = lv_string ).
+ENDLOOP.
+* Sort
+SORT ct_words BY radius ASCENDING.
+* Get length
+lv_len = LINES( ct_words ).
+lv_median = lv_len / 2.
+READ TABLE ct_words INDEX lv_median ASSIGNING &lt;ls_word&gt;.
+IF sy-subrc NE 0.
+* ToDo
+ENDIF.
+lv_dist = &lt;ls_word&gt;-radius.
+* Get first with this distance
+LOOP AT ct_words ASSIGNING &lt;ls_word&gt; TO lv_median.
+lv_tabix = sy-tabix.
+IF &lt;ls_word&gt;-radius = lv_dist.</code></pre>
+<p>EXIT.</p>
+<pre><code>ENDIF.
+ENDLOOP.
+lv_median_low = lv_tabix - 1.
+* Get last with this distance
+LOOP AT ct_words ASSIGNING &lt;ls_word&gt; FROM lv_median.
+lv_tabix = sy-tabix.
+IF &lt;ls_word&gt;-radius &gt; lv_dist.</code></pre>
+<p>EXIT.</p>
+<pre><code>ENDIF.
+ENDLOOP.
+lv_median_up = lv_tabix - 1.
+lv_median_dist_up = lv_median_up - lv_median.
+lv_median_dist_low = lv_median - lv_median_low.
+IF lv_median_dist_up &lt; lv_median_dist_low.
+lv_median_opt = lv_median_up.
+ELSE.
+lv_median_opt = lv_median_low.
+ENDIF.
+* Get the word
+READ TABLE ct_words INDEX lv_median_opt ASSIGNING &lt;ls_word&gt;.
+lv_dist = &lt;ls_word&gt;-radius.
+* Add node
+ls_node-search_area = mv_search_area.
+ls_node-node_id = static_node_id_create( ).
+ls_node-pa_node_id = iv_pa_node_id.
+ls_node-word = lv_word_s.
+ls_node-radius = lv_dist.
+ls_node-left_right = iv_left_right.
+IF LINES( ct_words ) = 1.
+ls_node-is_leaf = abap_true.
+ENDIF.
+* Remove the center point
+DELETE ct_words INDEX 1.
+* Update index
+MODIFY /cow/ase_vp_tree FROM ls_node.</code></pre>
+<p>COMMIT WORK.</p>
+<pre><code>lv_median_opt = lv_median_opt - 1.
+IF lv_median_opt &gt; 0.
+* Split set
+LOOP AT ct_words ASSIGNING &lt;ls_word&gt; FROM 1 TO lv_median_opt.
+APPEND &lt;ls_word&gt; TO lt_words_left.
+ENDLOOP.
+ENDIF.
+lv_from = lv_median_opt + 1.
+IF LINES( ct_words ) GE lv_from.
+LOOP AT ct_words ASSIGNING &lt;ls_word&gt; FROM lv_from.
+APPEND &lt;ls_word&gt; TO lt_words_right.
+ENDLOOP.
+ENDIF.</code></pre>
+<p>CLEAR ct_words.</p>
+<pre><code>DATA: lo_left TYPE REF TO /cow/cl_ase_vp_tree_builder,
+lo_right TYPE REF TO /cow/cl_ase_vp_tree_builder.
+IF LINES( lt_words_left ) &gt; 0.
+me-&gt;create_node( EXPORTING iv_pa_node_id = ls_node-node_id
+iv_left_right = &#x27;L&#x27;
+CHANGING ct_words = lt_words_left ).
+ENDIF.
+IF LINES( lt_words_right ) &gt; 0.
+me-&gt;create_node( EXPORTING iv_pa_node_id = ls_node-node_id
+iv_left_right = &#x27;R&#x27;
+CHANGING ct_words = lt_words_right ).
+ENDIF.
+ENDMETHOD.
+METHOD create_root_node.
+SELECT word length FROM /cow/ase_words INTO CORRESPONDING FIELDS OF TABLE mt_words
+WHERE search_area = mv_search_area.
+SORT mt_words BY word.
+DELETE ADJACENT DUPLICATES FROM mt_words.
+me-&gt;create_node( EXPORTING iv_pa_node_id = space
+iv_left_right = &#x27;C&#x27;
+CHANGING ct_words = mt_words ).
+ENDMETHOD.
+METHOD dist_list_calc_mean.
+DATA: lv_lines TYPE int4,
+lv_dist TYPE int4.
+FIELD-SYMBOLS: &lt;lv_dist&gt; TYPE int4.
+lv_lines = LINES( it_dist ).
+IF lv_lines = 0.
+RETURN.
+ENDIF.
+LOOP AT it_dist ASSIGNING &lt;lv_dist&gt;.
+lv_dist = lv_dist + &lt;lv_dist&gt;.
+ENDLOOP.
+rv_ = lv_dist / lv_lines.
+ENDMETHOD.
+METHOD dist_list_calc_variance.
+DATA: lv_lines TYPE int4,
+lv_dist TYPE int4,
+lv_var TYPE int4.
+DATA: lv_mean TYPE /cow/ase_rational.
+FIELD-SYMBOLS: &lt;lv_dist&gt; TYPE int4.
+lv_lines = LINES( it_dist ).
+IF lv_lines = 0.
+RETURN.
+ENDIF.
+lv_mean = /cow/cl_ase_vp_tree_builder=&gt;dist_list_calc_mean( it_dist ).
+LOOP AT it_dist ASSIGNING &lt;lv_dist&gt;.
+lv_var = lv_var + ( &lt;lv_dist&gt; - lv_mean ) * ( &lt;lv_dist&gt; - lv_mean ).
+ENDLOOP.
+rv_ = lv_var / lv_lines.
+ENDMETHOD.
+METHOD get_random_word.
+DATA: lv_lines TYPE int4,
+lv_seed TYPE int4,
+lo_random TYPE REF TO cl_abap_random,
+lv_random TYPE int4.
+FIELD-SYMBOLS: &lt;ls_words&gt; TYPE /cow/ase_s_word_s.
+lv_lines = LINES( it_words ).
+IF lv_lines &lt; 1.
+RETURN.
+ENDIF.
+lv_seed = cl_abap_random=&gt;seed( ).
+lo_random = cl_abap_random=&gt;create( lv_seed ).
+lv_random = lo_random-&gt;intinrange( low = 1 high = lv_lines ).
+READ TABLE it_words INDEX lv_random ASSIGNING &lt;ls_words&gt;.
+IF sy-subrc NE 0.
+* ToDo
+ENDIF.
+rv_ = &lt;ls_words&gt;-word.
+ENDMETHOD.
+METHOD get_variant_word.
+DATA: lv_lines TYPE int4,
+lv_len TYPE int4,</code></pre>
+<p>lt_words LIKE it_words,</p>
+<pre><code>lv_median TYPE int4.
+FIELD-SYMBOLS: &lt;ls_words&gt; TYPE /cow/ase_s_word_s.
+lt_words = it_words.
+lv_lines = LINES( it_words ).
+SORT lt_words BY length ASCENDING.
+lv_median = lv_lines / 2.
+IF lv_median = 0.
+lv_median = 1.
+ENDIF.
+READ TABLE lt_words INDEX lv_median ASSIGNING &lt;ls_words&gt;.
+rv_ = &lt;ls_words&gt;-word.
+ENDMETHOD.
+METHOD reset.
+DELETE FROM /cow/ase_vp_tree WHERE search_area = mv_search_area.
+ENDMETHOD.
+METHOD static_node_id_create.</code></pre>
+<p>CALL FUNCTION &#x27;GUID_CREATE&#x27;</p>
+<pre><code>IMPORTING
+ev_guid_32 = rv_.
+ENDMETHOD.
+METHOD word_calc_variance.
+DATA: lt_dist TYPE /cow/ase_t_distance,
+lv_dist TYPE int4,
+lv_word_s TYPE string,
+lv_string TYPE string.
+FIELD-SYMBOLS: &lt;ls_word&gt; TYPE /cow/ase_s_word_s.
+LOOP AT it_words ASSIGNING &lt;ls_word&gt;.
+lv_word_s = iv_word.
+lv_string = &lt;ls_word&gt;-word.
+lv_dist = /cow/cl_ase_util=&gt;calc_levenshtein_dist( iv_s1 = lv_word_s iv_s2 = lv_string ).
+APPEND lv_dist TO lt_dist.
+ENDLOOP.
+rv_ = /cow/cl_ase_vp_tree_builder=&gt;dist_list_calc_variance( lt_dist ).
+ENDMETHOD.
+ENDCLASS.</code></pre>
+<p>Um den VP Tree aufzubauen, wird die Klasse in einem Programm folgendermaßen verwendet:</p>
+<p>REPORT /cow/ase_vp_tree_builder.</p>
+<pre><code>DATA: lo_vp TYPE REF TO /cow/cl_ase_vp_tree_builder.
+PARAMETERS: sa TYPE /cow/ase_search_area DEFAULT &#x27;DEFAULT&#x27;.
+CREATE OBJECT lo_vp
+EXPORTING
+iv_search_area = sa.
+lo_vp-&gt;build( ).</code></pre>
+<p>Ändert sich das Wörterbuch, muss stets der gesamte VP-Tree neu gebildet werden. Es ist klar nach dem bereits Gesagten, dass der Aufbau des VP-Trees eine zeitaufwendige Angelegenheit ist. D.h. auch wenn Dokumente bereits indiziert sind, sind sie nicht sofort in der Suche auffindbar. Zuerst muß der VP-Tree mit den neuen Indexdaten aufgebaut werden. Der Update-Algorithmus muss als noch offener Punkt betrachtet werden.</p>
+<p>Wir weisen darauf hin, dass die oben angezeigte Implementierung nur ein erster Ansatz ist, um einen Eindruck zu vermitteln von der Funktionsweise eines VP-Trees. Sicherlich gibt es noch viel Optimierungspotential. Außerdem gibt es bereits verfeinerte VP-Tree-Verfahren, die der geneigte Leser leicht bei einer Internetrecherche finden kann. Insbesondere das Auffinden eines &quot;guten&quot; Vantage Points ist Gegenstand vieler Untersuchungen. Häufig wird vorgeschlagen, einen Punkt zu wählen, dessen Abstands-Varianz maximal ist unter einer Teilmenge zufällig gewählter Punkte.</p>
+<p>Teil 3: Suchen im VP-Tree</p>
+<p>Die Suche im VP-Tree vergleicht iterativ den Abstand des Suchwortes mit dem Knotenwort. Dabei liegt das Suchwort entweder im Knotenkreis um das Knotenwort oder außerhalb dieses Kreises. Liegt das Suchwort weit &quot;genug&quot; im Kreis oder weit genug außerhalb des Kreises, so genügt es entweder nur den linken oder nur den rechten Zweig des Suchbaumes zu durchsuchen. Dadurch reduziert sich die Anzahl der nötigen Abstandsberechnungen drastisch. Im Idealfall entsteht eine binäre Suche, deren Kosten bekanntermaßen log(n) sind. Hier die Implementierung im ABAP:</p>
+<pre><code>CLASS vpt_searcher DEFINITION.
+PUBLIC SECTION.
+DATA: mv_sa TYPE /cow/ase_search_area,
+mt_result TYPE /cow/ase_t_vp_search_result,
+mv_tau TYPE int4 VALUE 99999.</code></pre>
+<h2>METHODS:</h2>
+<p>constructor</p>
+<pre><code>IMPORTING
+iv_sa TYPE /cow/ase_search_area,</code></pre>
+<p>execute</p>
+<pre><code>IMPORTING iv_word TYPE /cow/ase_word</code></pre>
+<p>RAISING /cow/cx_root.</p>
+<p>PROTECTED SECTION.</p>
+<h2>METHODS:</h2>
+<p>vpt_get_root_node</p>
+<pre><code>RETURNING value(rs_) TYPE /cow/ase_vp_tree,</code></pre>
+<p>next</p>
+<pre><code>IMPORTING
+iv_word TYPE string
+is_node TYPE /cow/ase_vp_tree
+iv_dist TYPE int4</code></pre>
+<p>RAISING /cow/cx_root,</p>
+<p>node_get_right_child</p>
+<pre><code>IMPORTING
+iv_node_id TYPE /cow/node_id
+RETURNING value(rs_) TYPE /cow/ase_vp_tree,</code></pre>
+<p>node_get_left_child</p>
+<pre><code>IMPORTING
+iv_node_id TYPE /cow/node_id
+RETURNING value(rs_) TYPE /cow/ase_vp_tree,</code></pre>
+<p>determine_tau,</p>
+<p>check_exit</p>
+<pre><code>RETURNING value(rv_) TYPE flag.
+ENDCLASS. &quot;vpt_searcher DEFINITION
+CLASS vpt_searcher IMPLEMENTATION.
+METHOD constructor.
+mv_sa = iv_sa.
+ENDMETHOD. &quot;constructor
+METHOD execute.
+DATA: lv_search_string TYPE string,
+lv_word TYPE string,
+ls_root TYPE /cow/ase_vp_tree,</code></pre>
+<p>ls_result LIKE LINE OF mt_result.</p>
+<pre><code>lv_search_string = iv_word.
+* Get root node
+ls_root = me-&gt;vpt_get_root_node( ).
+* Store root</code></pre>
+<p>MOVE-CORRESPONDING ls_root TO ls_result.</p>
+<pre><code>lv_word = ls_root-word.
+* Calc distance
+ls_result-dist = /cow/cl_ase_util=&gt;calc_levenshtein_dist( iv_s1 = lv_search_string iv_s2 = lv_word ).
+* Calc score
+ls_result-score = /cow/cl_ase_search_ui_co=&gt;calc_levenshtein_score( iv_search_string = lv_search_string
+iv_dist = ls_result-dist
+iv_word = lv_word ).
+APPEND ls_result TO mt_result.
+* Call next
+me-&gt;next( iv_word = lv_search_string is_node = ls_root iv_dist = ls_result-dist ).
+ENDMETHOD. &quot;execute
+METHOD vpt_get_root_node.
+SELECT SINGLE * FROM /cow/ase_vp_tree INTO rs_
+WHERE search_area = mv_sa AND
+pa_node_id = space.
+ENDMETHOD. &quot;vpt_get_root_node
+METHOD next.
+IF me-&gt;check_exit( ) = abap_true.
+RETURN.
+ENDIF.
+DATA: lv_dist TYPE int4,
+lv_dist_sphere TYPE int4,</code></pre>
+<p>ls_result LIKE LINE OF mt_result,</p>
+<pre><code>lv_word TYPE string,
+lv_word_l TYPE string,
+lv_word_r TYPE string,
+ls_child_l TYPE /cow/ase_vp_tree,
+ls_child_r TYPE /cow/ase_vp_tree,
+lv_search_left_and_right TYPE flag.
+* Calc distance of words
+lv_word = is_node-word.
+lv_dist = iv_dist.
+* 1. Case: word is in ball (closed ball)
+IF lv_dist LE is_node-radius.
+* Calc distance to sphere
+lv_dist_sphere = is_node-radius - lv_dist.
+IF lv_dist_sphere GE mv_tau.
+* Search only in left branch
+ls_child_l = me-&gt;node_get_left_child( is_node-node_id ).
+IF ls_child_l IS NOT INITIAL.</code></pre>
+<p>MOVE-CORRESPONDING ls_child_l TO ls_result.</p>
+<pre><code>lv_word_l = ls_child_l-word.
+ls_result-dist = /cow/cl_ase_util=&gt;calc_levenshtein_dist( iv_s1 = iv_word iv_s2 = lv_word_l ).
+* Calc score
+ls_result-score = /cow/cl_ase_search_ui_co=&gt;calc_levenshtein_score( iv_search_string = iv_word
+iv_dist = ls_result-dist
+iv_word = lv_word_l ).
+* Is leaf
+ls_result-is_leaf = ls_child_l-is_leaf.</code></pre>
+<p>INSERT ls_result INTO TABLE mt_result.</p>
+<pre><code>* Determine tau
+me-&gt;determine_tau( ).
+* Call next
+me-&gt;next( iv_word = iv_word is_node = ls_child_l iv_dist = ls_result-dist ).
+ENDIF.
+ELSE.
+lv_search_left_and_right = abap_true.
+ENDIF.
+* 2. Case: word is not in closed ball; search in right branch
+ELSE.
+* Calc distance to left sphere
+lv_dist_sphere = lv_dist - is_node-radius.
+IF lv_dist_sphere GT mv_tau.
+* Get right child
+ls_child_r = me-&gt;node_get_right_child( is_node-node_id ).
+IF ls_child_r IS NOT INITIAL.</code></pre>
+<p>MOVE-CORRESPONDING ls_child_r TO ls_result.</p>
+<pre><code>lv_word_r = ls_child_r-word.
+ls_result-dist = /cow/cl_ase_util=&gt;calc_levenshtein_dist( iv_s1 = iv_word iv_s2 = lv_word_r ).
+* Calc score
+ls_result-score = /cow/cl_ase_search_ui_co=&gt;calc_levenshtein_score( iv_search_string = iv_word
+iv_dist = ls_result-dist
+iv_word = lv_word_r ).
+* Is leaf
+ls_result-is_leaf = ls_child_r-is_leaf.</code></pre>
+<p>INSERT ls_result INTO TABLE mt_result.</p>
+<pre><code>* Determine tau
+me-&gt;determine_tau( ).
+* Call next
+me-&gt;next( iv_word = iv_word is_node = ls_child_r iv_dist = ls_result-dist ).
+ENDIF.
+ELSE.
+lv_search_left_and_right = abap_true.
+ENDIF.
+IF lv_search_left_and_right = abap_true.
+* Search both in left and right
+ls_child_l = me-&gt;node_get_left_child( is_node-node_id ).
+IF ls_child_l IS NOT INITIAL.</code></pre>
+<p>MOVE-CORRESPONDING ls_child_l TO ls_result.</p>
+<pre><code>lv_word_l = ls_child_l-word.
+ls_result-dist = /cow/cl_ase_util=&gt;calc_levenshtein_dist( iv_s1 = iv_word iv_s2 = lv_word_l ).
+* Calc score
+ls_result-score = /cow/cl_ase_search_ui_co=&gt;calc_levenshtein_score( iv_search_string = iv_word
+iv_dist = ls_result-dist
+iv_word = lv_word_l ).
+* Is leaf
+ls_result-is_leaf = ls_child_l-is_leaf.</code></pre>
+<p>INSERT ls_result INTO TABLE mt_result.</p>
+<pre><code>* Determine tau
+me-&gt;determine_tau( ).
+* Call next
+me-&gt;next( iv_word = iv_word is_node = ls_child_l iv_dist = ls_result-dist ).
+ENDIF.
+ls_child_r = me-&gt;node_get_right_child( is_node-node_id ).
+IF ls_child_r IS NOT INITIAL.</code></pre>
+<p>MOVE-CORRESPONDING ls_child_r TO ls_result.</p>
+<pre><code>lv_word_r = ls_child_r-word.
+ls_result-dist = /cow/cl_ase_util=&gt;calc_levenshtein_dist( iv_s1 = iv_word iv_s2 = lv_word_r ).
+* Calc score
+ls_result-score = /cow/cl_ase_search_ui_co=&gt;calc_levenshtein_score( iv_search_string = iv_word
+iv_dist = ls_result-dist
+iv_word = lv_word_r ).
+* Is leaf
+ls_result-is_leaf = ls_child_r-is_leaf.</code></pre>
+<p>INSERT ls_result INTO TABLE mt_result.</p>
+<pre><code>* Determine tau
+me-&gt;determine_tau( ).
+* Call next
+me-&gt;next( iv_word = iv_word is_node = ls_child_r iv_dist = ls_result-dist ).
+ENDIF.
+ENDMETHOD. &quot;next
+METHOD node_get_right_child.
+SELECT SINGLE * FROM /cow/ase_vp_tree INTO rs_
+WHERE search_area = mv_sa AND
+pa_node_id = iv_node_id AND left_right = &#x27;R&#x27;.
+ENDMETHOD. &quot;node_get_right_child
+METHOD node_get_left_child.
+SELECT SINGLE * FROM /cow/ase_vp_tree INTO rs_
+WHERE search_area = mv_sa AND
+pa_node_id = iv_node_id AND left_right = &#x27;L&#x27;.
+ENDMETHOD. &quot;node_get_left_child
+METHOD determine_tau.
+FIELD-SYMBOLS: &lt;ls_result&gt; TYPE /cow/ase_s_vp_search_result.
+READ TABLE mt_result INDEX 1 ASSIGNING &lt;ls_result&gt;.
+IF sy-subrc = 0.
+mv_tau = &lt;ls_result&gt;-dist.
+ELSE.
+mv_tau = 99999.
+ENDIF.
+ENDMETHOD. &quot;determine_tau
+METHOD check_exit.
+* DATA: lv_lines TYPE int4.</code></pre>
+<p>*</p>
+<pre><code>* FIELD-SYMBOLS: &lt;ls_result&gt; TYPE /cow/ase_s_vp_search_result.</code></pre>
+<p>*</p>
+<pre><code>* lv_lines = LINES( mt_result ).</code></pre>
+<p>*</p>
+<pre><code>* IF lv_lines LE 10.
+* RETURN.
+* ENDIF.</code></pre>
+<p>*</p>
+<pre><code>* READ TABLE mt_result INDEX lv_lines ASSIGNING &lt;ls_result&gt;.
+* IF sy-subrc = 0 AND &lt;ls_result&gt;-is_leaf = abap_true.
+* rv_ = abap_true.
+* RETURN.
+* ELSE.
+* rv_ = abap_false.
+* ENDIF.
+ENDMETHOD. &quot;check_exit
+ENDCLASS. &quot;vpt_searcher IMPLEMENTATION</code></pre>
+<h2>Die Suchklasse wird dann z.B. in folgender Weise verwendet:</h2>
+<pre><code>DATA: lo_vpt_searcher TYPE REF TO vpt_searcher,
+lt_result TYPE /cow/ase_t_vp_search_result.
+FIELD-SYMBOLS: &lt;ls_result&gt; TYPE /cow/ase_s_vp_search_result.</code></pre>
+<p>TRANSLATE lv_word TO UPPER CASE.</p>
+<pre><code>CREATE OBJECT lo_vpt_searcher
+EXPORTING
+iv_sa = iv_sa.
+lo_vpt_searcher-&gt;execute( iv_word ).
+lt_result = lo_vpt_searcher-&gt;mt_result.
+LOOP AT lt_result ASSIGNING &lt;ls_result&gt;.
+lv_word_string = &lt;ls_result&gt;-word.
+lv_search_string_string = &lt;ls_string&gt;.
+lv_score = me-&gt;calc_levenshtein_score( iv_search_string = lv_search_string_string
+iv_word = lv_word_string
+iv_dist = &lt;ls_result&gt;-dist ).
+IF lv_score &gt; &#x27;0.50&#x27;.
+APPEND &lt;ls_result&gt; TO lt_words.
+ENDIF.
+ENDLOOP.</code></pre>
+        </div>
+        <div class="article-backlinks">
+          <a class="btn btn-secondary" href="../../blog/">Archiv</a>
+          <a class="btn btn-primary" href="../../volltextsuche/">Volltextsuche ansehen</a>
+        </div>
+      </article>
+    </main>
+    <footer class="site-footer"><div class="container footer-grid"><p>&copy; <span id="year"></span> ExeQwork GmbH.</p><div><a href="../../impressum/">Impressum</a><a href="../../disclaimer-haftungsausschluss/">Datenschutz</a></div></div></footer>
+    <script src="../../script.js"></script>
   </body>
 </html>

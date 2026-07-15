@@ -1,38 +1,80 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blog | Exeqwork</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <title>Archiv | ExeQwork</title>
+    <meta name="description" content="Archivierte ExeQwork Fachartikel aus dem alten Blog zu SAP-Prozessen, ABAP-Suche, RSA und Modellierung." />
     <link rel="canonical" href="https://www.exeqwork.com/blog/" />
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
-    <div class="background-art" aria-hidden="true"><span class="blob blob-a"></span><span class="blob blob-b"></span><span class="blob blob-c"></span></div>
     <header class="site-header">
       <div class="container nav-wrap">
-        <a class="logo" href="../">Exeqwork</a>
-        <nav class="nav-links">
-          <a href="../produkte/">Products</a>
-          <a href="../beratung/">Consulting</a>
-          <a href="../referenzen/">References</a>
-          <a href="../kundenstimmen/">Customer Voices</a>
-          <a href="../kontakt/">Contact</a>
+        <a class="logo" href="../" aria-label="ExeQwork Startseite"><img class="logo-image" src="../assets/brand/exeqwork-logo-full.png" alt="ExeQwork" /></a>
+        <nav class="nav-links" aria-label="Hauptnavigation">
+          <a href="../produkte/">Produkte</a>
+          <a href="../beratung/">Beratung</a>
+          <a href="../referenzen/">Referenzen</a>
+          <a href="../kontakt/">Kontakt</a>
         </nav>
       </div>
     </header>
     <main>
-      <section class="page-hero container reveal">
-        <p class="eyebrow">Insights</p>
-        <h1>Blog</h1>
-        <p class="lead">Articles and updates can be published here with the same modern visual language.</p>
-        <div class="hero-actions"><a class="btn btn-primary" href="../">Back to Home</a><a class="btn btn-soft" href="../">Back to Home</a></div>
+      <section class="page-hero archive-hero container reveal">
+        <p class="eyebrow">Archiv</p>
+        <h1>Fachartikel aus dem alten Blog</h1>
+        <p class="lead">Ausgewählte ältere Beiträge bleiben hier unter ihren alten URLs erreichbar.</p>
+      </section>
+      <section class="archive-list container reveal" aria-label="Archivierte Blogartikel">
+          <article class="archive-item">
+            <a href="../post/der-sap-standard-liefert-keine-prozesse/">
+              <img src="../assets/blog/sap-standard-de.jpg" alt="Der SAP-Standard liefert keine Prozesse" loading="lazy" />
+              <span>SAP-Prozesse</span>
+              <h2>Der SAP-Standard liefert keine Prozesse</h2>
+              <p>Warum SAP-Belege noch keine geführten Geschäftsprozesse ergeben und welche Architektur ein Prozesswerkzeug braucht.</p>
+              <small>21. Nov. 2018</small>
+            </a>
+          </article>
+          <article class="archive-item">
+            <a href="../post/the-sap-standard-does-not-provide-processes/">
+              <img src="../assets/blog/sap-standard-en.jpg" alt="The SAP-Standard does not provide processes" loading="lazy" />
+              <span>SAP processes</span>
+              <h2>The SAP-Standard does not provide processes</h2>
+              <p>Why SAP documents are not the same as managed business processes and what a process tool needs to provide.</p>
+              <small>5. Aug. 2019</small>
+            </a>
+          </article>
+          <article class="archive-item">
+            <a href="../post/eine-volltextsuchmaschine-mit-abap-bauen-ist-das-möglich/">
+              <img src="../assets/blog/abap-search-hero.jpg" alt="Eine Volltextsuchmaschine mit ABAP bauen" loading="lazy" />
+              <span>ABAP Search Engine</span>
+              <h2>Eine Volltextsuchmaschine mit ABAP bauen: Ist das möglich?</h2>
+              <p>Ein technischer Artikel über Volltextsuche, OCR-Fehler, Levenshtein-Distanz und Suchstrukturen in ABAP.</p>
+              <small>29. Jan. 2020</small>
+            </a>
+          </article>
+          <article class="archive-item">
+            <a href="../post/how-the-rsa-algorithm-works/">
+              <img src="../assets/blog/rsa-method.jpg" alt="How the RSA algorithm works" loading="lazy" />
+              <span>Cryptography</span>
+              <h2>How the RSA algorithm works</h2>
+              <p>A short archived note about an ExeQwork PDF explaining the elementary algebra behind RSA encryption.</p>
+              <small>28. Feb. 2020</small>
+            </a>
+          </article>
+          <article class="archive-item">
+            <a href="../post/sir-epidemiemodell/">
+              <img src="../assets/blog/sir-epidemiemodell.png" alt="SIR-Epidemiemodell" loading="lazy" />
+              <span>Modellierung</span>
+              <h2>SIR-Epidemiemodell</h2>
+              <p>Ein kurzer archivierter Hinweis auf ein Python-Programm zum Experimentieren mit einem SIR-Epidemiemodell.</p>
+              <small>25. März 2020</small>
+            </a>
+          </article>
       </section>
     </main>
-    <footer class="site-footer"><div class="container"><p>&copy; <span id="year"></span> Exeqwork GmbH.</p></div></footer>
+    <footer class="site-footer"><div class="container footer-grid"><p>&copy; <span id="year"></span> ExeQwork GmbH.</p><div><a href="../impressum/">Impressum</a><a href="../disclaimer-haftungsausschluss/">Datenschutz</a></div></div></footer>
     <script src="../script.js"></script>
   </body>
 </html>

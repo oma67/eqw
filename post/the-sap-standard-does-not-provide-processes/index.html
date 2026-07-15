@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The SAP-Standard does not provide processes | ExeQwork Archiv</title>
+    <meta name="description" content="Why SAP documents are not the same as managed business processes and what a process tool needs to provide." />
+    <link rel="canonical" href="https://www.exeqwork.com/post/the-sap-standard-does-not-provide-processes/" />
+    <link rel="stylesheet" href="../../styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="logo" href="../../" aria-label="ExeQwork Startseite"><img class="logo-image" src="../../assets/brand/exeqwork-logo-full.png" alt="ExeQwork" /></a>
+        <nav class="nav-links" aria-label="Hauptnavigation">
+          <a href="../../produkte/">Produkte</a>
+          <a href="../../beratung/">Beratung</a>
+          <a href="../../referenzen/">Referenzen</a>
+          <a href="../../kontakt/">Kontakt</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <article class="article-shell container reveal">
+        <p class="eyebrow">SAP processes</p>
+        <h1>The SAP-Standard does not provide processes</h1>
+        <div class="article-meta"><span>5. Aug. 2019 · 4 Min.</span></div>
+        <p class="lead">Why SAP documents are not the same as managed business processes and what a process tool needs to provide.</p>
+        <div class="article-downloads">
+          <a class="btn btn-secondary" href="../../assets/blog/originals/the-sap-standard-does-not-provide-processes.pdf">Originalartikel als PDF</a>
+        </div>
+        <figure class="article-media article-media-main">
+          <img src="../../assets/blog/sap-standard-en.jpg" alt="Archive image for the article The SAP-Standard does not provide processes" loading="lazy" />
+        </figure>
+        <div class="article-body">
+<p>There is much talk of &quot;processes&quot; in the SAP environment. There are business processes, &quot;business process monitoring&quot;, software development, software maintenance, transport, migration processes and many more. Hardly anyone is worried about what this term means for software and its use. One of the most prominent business processes in SAP ERP is the goods receipt process. This consists of the following steps:</p>
+<ul><li>An order is initiated which creates a receipt in SAP</li><li>The order will be sent to the supplier</li><li>The goods are delivered, collected, and a goods receipt document is created in SAP ERP</li></ul>
+<h2>This example shows all the essential characteristics of a business process:</h2>
+<ul><li>The process has a temporal course</li><li>The process has a direction, that means it is possible to measure progress</li><li>The process has a defined state at all times</li><li>The process has different editors. These can be serial or parallel</li></ul>
+<p>The process carries a log with itPast process states may need to be recoverable</p>
+<p>SAP documents can be included or created (purchase order, goods receipt, possibly others)There are physical documents (forms) included (for example delivery note, order)</p>
+<p>There are numerous similar business processes that are generally handled through SAP ERP. Examples include:</p>
+<ul><li>Receipt of invoice</li><li>Receipt of complaints</li><li>Sales Process (Customer Inquiry -&gt; Offer -&gt; Order)</li><li>Inventory</li></ul>
+<h2>The SAP standard does not provide processes</h2>
+<p>As business processes, however, these processes are only available on an organizational level in SAP ERP. The SAP standard only delivers the documents between which the processes run. On receipt of goods for example the order and material documents are created during the process. The handling of the process is solely up to the user.</p>
+<p>Appointments, progress, condition, involved processors, documents must be managed by the user. There is no central location where the user can gain an overview of the running processes. Monitoring the processes is time-consuming, cumbersome and unreliable, since many data sources (documents) must be used for the evaluation. In the process handling, there are frequent media disruptions: Communication via email, telephone, short message services. This communication remains undocumented. In retrospect, it is difficult to understand decisions.</p>
+<p>The SAP standard apparently - intentionally or unintentionally - leaves a gap of astounding proportions.</p>
+<h2>The requirements for a process management tool</h2>
+<p>If you want to create a software tool to support the business process, it is expedient to abstract from specific use cases. That is, for example, to consider the use cases &quot;invoice receipt&quot; and &quot;goods receipt&quot; and to try to isolate the common properties and requirements.</p>
+<h2>Business object process</h2>
+<p>It has proven to be useful to consider the process itself as a business object. Process runtime</p>
+<p>Processes can be advanced manually. That means they can be controlled by the user in a dialog transaction, but they can also progress automatically.</p>
+<p>Common forms of business often involve both forms of &quot;pushing ahead&quot;. It follows that a kind of &quot;process runtime&quot; is needed to automatically drive the processes.</p>
+<h2>Monitoring vs. Cockpit</h2>
+<p>Process status and progress must be able to be monitored. For this purpose, a monitoring transaction is required, which identifies all essential key figures and provides a view of the detailed data of the process. Allows monitoring transaction as well as the control of the process, in other words pushing the process forward and changing the process data, that&#x27;s what we call Process Cockpit.</p>
+<p>From a software point of view, monitor and cockpit can be the same transaction, which has different rights.</p>
+<h2>Software architecture of a process management tool</h2>
+<p>We assume a development in ABAP OO because the ABAP runtime offers decisive advantages.</p>
+<p>Monitoring and Cockpit</p>
+<p>Monitoring provides the user with all the necessary information about the progress, number and status of the processes. From the basic monitor, the log of each individual process should be visible. In addition, the base monitor should allow the reboot and debug of a single process and thus already fulfills a few cockpit functions. The monitoring is completely decoupled from duration and merchant class. It can be implemented in any UI technique (UI5, Mobile, SAPGUI, Windows).</p>
+<h2>Application Cockpit</h2>
+<p>Content-wise the application cockpit follows the monitor, but also provides views on application data as well as application-specific functions. The UI is an extension of the base monitor. The implementation of a cockpit can be accomplished in a very short time.</p>
+<h2>Handler Class</h2>
+<p>The basis of all application processes is an abstract process without application reference. This is implemented as a simple ABAP-OO class (handler class) with a few properties:</p>
+<ul><li>The class provides its own persistence, that means it reads or writes itself into the database</li><li>The class provides a locking mechanism so that only one editor is ever allowed</li><li>The class writes its own log</li><li>The class has a dedicated callback method, which is called for &quot;dark&quot; processing of the process runtime</li><li>The class is inheritable</li></ul>
+<p>All application-specific classes derive from this abstract process class.</p>
+<h2>Late Binding</h2>
+<p>The process run time searches for the merchant class in a registration table associated with the particular process (e.g., merchant class for the goods receipt process). The merchant class is instantiated at run time and its callback method is called by the runtime.</p>
+<p>This concept of late binding is based on the principle of the Component Object Model (COM), which was established by Microsoft back in 1992 and is still used today in the new Windows 10 Runtime (WinRT).</p>
+<h2>The solution: the universal process tool</h2>
+<h2>For companies it can be worthwhile to close the &quot;process gap&quot; this way:</h2>
+<ul><li>From a process perspective, a central entry point is created, which often corresponds to the department view</li><li>Process lead times are shortened and measurable</li><li>Errors are completely logged</li><li>Processes become transparent: Reporting can be implemented as a simple extension of monitoring</li><li>The project implementation times are optimized by the high degree of reuse of existing software components</li><li>The software adapts to the business process and not vice versa</li><li>The concept is future-proof, as it adapts to new UI technologies with minimal effort.</li><li>The principle can also be applied to technical processes such as migrations or asynchronous, parallelized bulk processes</li></ul>
+<p>Would you like to know more about our solution?</p>
+        </div>
+        <div class="article-backlinks">
+          <a class="btn btn-secondary" href="../../blog/">Archiv</a>
+          <a class="btn btn-primary" href="../../en/universal-process-tool/">View Universal Process Tool</a>
+        </div>
+      </article>
+    </main>
+    <footer class="site-footer"><div class="container footer-grid"><p>&copy; <span id="year"></span> ExeQwork GmbH.</p><div><a href="../../impressum/">Impressum</a><a href="../../disclaimer-haftungsausschluss/">Datenschutz</a></div></div></footer>
+    <script src="../../script.js"></script>
+  </body>
+</html>

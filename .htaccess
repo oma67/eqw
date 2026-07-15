@@ -37,10 +37,6 @@ RewriteRule ^en/documentconverter(\.html)?/?$ /en/word-converter/ [R=301,L,NC]
 RewriteRule ^en/impressum(\.html)?/?$ /en/legal-notice/ [R=301,L,NC]
 RewriteRule ^en/disclaimer-haftungsausschluss(\.html)?/?$ /en/legal-notice/ [R=301,L,NC]
 
-# Indexed legacy blog post paths.
-RewriteRule ^post/how-the-rsa-algorithm-works(\.html)?/?$ /blog/ [R=301,L,NC]
-RewriteRule ^post/eine-volltextsuchmaschine-mit-abap-bauen-ist-das-m(ö|ö)glich(\.html)?/?$ /volltextsuche/ [R=301,L,NC]
-
 # Product aliases.
 RewriteRule ^(abap-search-engine|abapsearchengine|volltextsuche|fulltext-search|full-text-search|sap-volltextsuche|sap-search)(\.html)?/?$ /volltextsuche/ [R=301,L,NC]
 RewriteRule ^(concretecockpit|concrete-cockpit|concrete_cockpit)(\.html)?/?$ /concretecockpit/ [R=301,L,NC]
