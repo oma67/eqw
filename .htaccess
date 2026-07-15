@@ -1,5 +1,15 @@
 RewriteEngine On
 
+# Legacy English subdomain URLs that Google has indexed.
+RewriteCond %{HTTP_HOST} ^en\.exeqwork\.company$ [NC]
+RewriteRule ^machine-learning(\.html)?/?$ https://www.exeqwork.com/en/document-classifier/ [R=301,L,NC]
+RewriteCond %{HTTP_HOST} ^en\.exeqwork\.company$ [NC]
+RewriteRule ^referenzen(\.html)?/?$ https://www.exeqwork.com/en/ [R=301,L,NC]
+RewriteCond %{HTTP_HOST} ^en\.exeqwork\.company$ [NC]
+RewriteRule ^universal-process-tool(\.html)?/?$ https://www.exeqwork.com/en/universal-process-tool/ [R=301,L,NC]
+RewriteCond %{HTTP_HOST} ^en\.exeqwork\.company$ [NC]
+RewriteRule ^(.*)$ https://www.exeqwork.com/en/$1 [R=301,L]
+
 # Keep one canonical host and protocol.
 RewriteCond %{HTTPS} !=on [OR]
 RewriteCond %{HTTP_HOST} !^www\.exeqwork\.com$ [NC]
@@ -19,6 +29,17 @@ RewriteRule ^(beratung|consulting|service|services|sap-beratung|sap-consulting)(
 RewriteRule ^(referenzen|references|customers|kunden|kundenstimmen|customer-voices)(\.html)?/?$ /referenzen/ [R=301,L,NC]
 RewriteRule ^(partner|partners)(\.html)?/?$ /partner/ [R=301,L,NC]
 RewriteRule ^(blog|news|aktuelles)(\.html)?/?$ /blog/ [R=301,L,NC]
+
+# Indexed legacy English paths from the previous site.
+RewriteRule ^en/produkte(\.html)?/?$ /en/products/ [R=301,L,NC]
+RewriteRule ^en/volltextsuche(\.html)?/?$ /en/abap-search-engine/ [R=301,L,NC]
+RewriteRule ^en/documentconverter(\.html)?/?$ /en/word-converter/ [R=301,L,NC]
+RewriteRule ^en/impressum(\.html)?/?$ /en/legal-notice/ [R=301,L,NC]
+RewriteRule ^en/disclaimer-haftungsausschluss(\.html)?/?$ /en/legal-notice/ [R=301,L,NC]
+
+# Indexed legacy blog post paths.
+RewriteRule ^post/how-the-rsa-algorithm-works(\.html)?/?$ /blog/ [R=301,L,NC]
+RewriteRule ^post/eine-volltextsuchmaschine-mit-abap-bauen-ist-das-m(ö|ö)glich(\.html)?/?$ /volltextsuche/ [R=301,L,NC]
 
 # Product aliases.
 RewriteRule ^(abap-search-engine|abapsearchengine|volltextsuche|fulltext-search|full-text-search|sap-volltextsuche|sap-search)(\.html)?/?$ /volltextsuche/ [R=301,L,NC]
