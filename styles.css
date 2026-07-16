@@ -494,6 +494,28 @@ small,
   text-decoration: none;
 }
 
+.hero-seal {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid rgba(11, 99, 182, 0.22);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--primary-dark);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.25;
+  text-decoration: none;
+}
+
+.hero-seal img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
