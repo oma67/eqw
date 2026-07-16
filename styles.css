@@ -497,8 +497,8 @@ small,
 }
 
 .metric-seal {
-  min-height: 190px;
-  padding: 18px;
+  min-height: 230px;
+  padding: 16px;
   background: var(--surface);
 }
 
@@ -520,8 +520,8 @@ small,
 }
 
 .metric-seal img {
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   object-fit: contain;
 }
 
@@ -1232,8 +1232,8 @@ small,
   }
 
   .metric-seal img {
-    width: 96px;
-    height: 96px;
+    width: 128px;
+    height: 128px;
   }
 
   .solution-map-head {
