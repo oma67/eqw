@@ -30,3 +30,57 @@ const observer = new IntersectionObserver(
 );
 
 document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+
+const contactEndpoint = window.EXEQWORK_CONTACT_ENDPOINT || "";
+
+document.querySelectorAll("[data-contact-form]").forEach((form) => {
+  const status = form.querySelector("[data-form-status]");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (form.elements.website && form.elements.website.value) {
+      return;
+    }
+
+    if (!contactEndpoint) {
+      status.textContent = form.dataset.errorMessage;
+      status.className = "form-status is-error";
+      return;
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    const previousLabel = submitButton ? submitButton.textContent : "";
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = form.dataset.submittingMessage || previousLabel;
+    }
+
+    try {
+      const response = await fetch(contactEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+
+      if (!response.ok) {
+        throw new Error("Contact form request failed");
+      }
+
+      form.reset();
+      status.textContent = form.dataset.successMessage;
+      status.className = "form-status is-success";
+      if (form.dataset.successUrl) {
+        window.location.assign(form.dataset.successUrl);
+      }
+    } catch (error) {
+      status.textContent = form.dataset.errorMessage;
+      status.className = "form-status is-error";
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = previousLabel;
+      }
+    }
+  });
+});

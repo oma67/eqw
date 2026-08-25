@@ -38,13 +38,59 @@
           bestehendes Add-on passt oder eine schlanke Erweiterung sinnvoller ist.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="mailto:info@exeqwork.com">info@exeqwork.com</a>
+          <a class="btn btn-primary" href="#kontaktformular">Anfrage senden</a>
           <a class="btn btn-secondary" href="../produkte/">Produkte ansehen</a>
         </div>
       </section>
 
+      <section class="contact-section container reveal" id="kontaktformular">
+        <form class="contact-form" data-contact-form data-success-url="../kontakt/danke/" data-success-message="Vielen Dank. Ihre Anfrage wurde gesendet." data-error-message="Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.">
+          <input type="hidden" name="language" value="de" />
+          <input class="contact-hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="form-grid">
+            <label>
+              <span>Name</span>
+              <input type="text" name="name" autocomplete="name" required />
+            </label>
+            <label>
+              <span>Firma</span>
+              <input type="text" name="company" autocomplete="organization" />
+            </label>
+            <label>
+              <span>Geschäftliche E-Mail</span>
+              <input type="email" name="email" autocomplete="email" required />
+            </label>
+            <label>
+              <span>Telefon</span>
+              <input type="tel" name="phone" autocomplete="tel" />
+            </label>
+          </div>
+          <label>
+            <span>Worum geht es?</span>
+            <select name="topic" required>
+              <option value="">Bitte auswählen</option>
+              <option>SAP Add-ons</option>
+              <option>Dokumentprozesse</option>
+              <option>SAP DMS Beratung</option>
+              <option>ConcreteCockpit</option>
+              <option>Sonstiges</option>
+            </select>
+          </label>
+          <label>
+            <span>Nachricht</span>
+            <textarea name="message" rows="7" required></textarea>
+          </label>
+          <label class="form-check">
+            <input type="checkbox" name="privacy" required />
+            <span>Ich bin damit einverstanden, dass ExeQwork meine Angaben zur Bearbeitung der Anfrage verarbeitet.</span>
+          </label>
+          <button class="btn btn-primary" type="submit">Anfrage senden</button>
+          <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
       <section class="metrics container reveal" aria-label="Kontaktdaten">
-        <div><strong>E-Mail</strong><span>info@exeqwork.com</span></div>
+        <div><strong>Kontakt</strong><span>Bitte nutzen Sie das Formular.</span></div>
         <div><strong>Telefon</strong><span>+49 (0)6221 6735262</span></div>
         <div><strong>Standort</strong><span>69115 Heidelberg</span></div>
       </section>
@@ -56,6 +102,7 @@
         <div><a href="../impressum/">Impressum</a><a href="../disclaimer-haftungsausschluss/">Datenschutzerklärung</a><a href="../produkte/">Produkte</a></div>
       </div>
     </footer>
+    <script src="../contact-config.js"></script>
     <script src="../script.js"></script>
     <script src="../analytics-consent.js"></script>
   </body>
