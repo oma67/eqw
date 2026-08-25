@@ -21,4 +21,4 @@ Formularanbieter, eine Serverless Function oder eine eigene API zeigen. Die
 Empfaenger-Mailadresse wird dadurch nicht im HTML veroeffentlicht.
 
 Nach erfolgreichem Versand leiten alle Sprachversionen auf dieselbe
-Conversion-URL weiter: `https://exeqwork.company/kontakt/danke/`.
+Conversion-URL weiter: `https://exeqwork.company/kontakt/danke/index.html`.
