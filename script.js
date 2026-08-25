@@ -57,10 +57,21 @@ document.querySelectorAll("[data-contact-form]").forEach((form) => {
     }
 
     try {
+      const payload = Object.fromEntries(new FormData(form));
+      payload._subject = "Neue Kontaktformular-Anfrage von exeqwork.company";
+      payload._template = "table";
+      payload._captcha = "true";
+      payload._honey = payload.website || "";
+      payload._url = window.location.href;
+      delete payload.website;
+
       const response = await fetch(contactEndpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
