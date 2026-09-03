@@ -45,6 +45,10 @@ const formatDecimal = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 1,
 });
 
+const formatPercent = new Intl.NumberFormat("de-DE", {
+  maximumFractionDigits: 0,
+});
+
 document.querySelectorAll("[data-cc-roi]").forEach((calculator) => {
   const inputs = Object.fromEntries(
     Array.from(calculator.querySelectorAll("[data-roi-input]")).map((input) => [
@@ -84,6 +88,7 @@ document.querySelectorAll("[data-cc-roi]").forEach((calculator) => {
     const netSavings = grossSavings - annualCost;
     const monthlyGrossSavings = grossSavings / 12;
     const paybackMonths = monthlyGrossSavings > 0 ? initialCost / monthlyGrossSavings : 0;
+    const roiPercent = annualCost > 0 ? (netSavings / annualCost) * 100 : 0;
 
     outputs.hoursSaved.textContent = `${formatNumber.format(hoursSaved)} h`;
     outputs.weeklyHours.textContent = `${formatDecimal.format(weeklyHours)} h`;
@@ -91,6 +96,7 @@ document.querySelectorAll("[data-cc-roi]").forEach((calculator) => {
     outputs.grossSavings.textContent = formatEuro.format(grossSavings);
     outputs.monthlyCost.textContent = formatEuro.format(monthlyCost);
     outputs.paybackMonths.textContent = `${formatDecimal.format(paybackMonths)} Monate`;
+    outputs.roiPercent.textContent = `${formatPercent.format(roiPercent)} %`;
     outputs.totalPotential.textContent = formatEuro.format(netSavings);
   };
 
