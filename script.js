@@ -31,6 +31,73 @@ const observer = new IntersectionObserver(
 
 document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
 
+const formatEuro = new Intl.NumberFormat("de-DE", {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 0,
+});
+
+const formatNumber = new Intl.NumberFormat("de-DE", {
+  maximumFractionDigits: 0,
+});
+
+const formatDecimal = new Intl.NumberFormat("de-DE", {
+  maximumFractionDigits: 1,
+});
+
+document.querySelectorAll("[data-cc-roi]").forEach((calculator) => {
+  const inputs = Object.fromEntries(
+    Array.from(calculator.querySelectorAll("[data-roi-input]")).map((input) => [
+      input.dataset.roiInput,
+      input,
+    ])
+  );
+  const outputs = Object.fromEntries(
+    Array.from(calculator.querySelectorAll("[data-roi-output]")).map((output) => [
+      output.dataset.roiOutput,
+      output,
+    ])
+  );
+
+  const readValue = (name) => {
+    const value = Number.parseFloat(inputs[name]?.value || "0");
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  };
+
+  const updateRoi = () => {
+    const requests = readValue("requests");
+    const employees = Math.max(readValue("employees"), 1);
+    const hours = readValue("hours");
+    const hourlyRate = readValue("hourlyRate");
+    const initialCost = 20000;
+    const annualMaintenanceRate = 0.2;
+    const usageYears = 5;
+    const remainingEffortShare = 0.2;
+    const automationShare = 1 - remainingEffortShare;
+    const annualCost = initialCost / usageYears + initialCost * annualMaintenanceRate;
+    const monthlyCost = annualCost / 12;
+
+    const hoursSaved = requests * hours * automationShare;
+    const weeklyHours = hoursSaved / employees / 46;
+    const fteSaved = hoursSaved / 1748;
+    const grossSavings = hoursSaved * hourlyRate;
+    const netSavings = grossSavings - annualCost;
+    const monthlyGrossSavings = grossSavings / 12;
+    const paybackMonths = monthlyGrossSavings > 0 ? initialCost / monthlyGrossSavings : 0;
+
+    outputs.hoursSaved.textContent = `${formatNumber.format(hoursSaved)} h`;
+    outputs.weeklyHours.textContent = `${formatDecimal.format(weeklyHours)} h`;
+    outputs.fteSaved.textContent = `${formatDecimal.format(fteSaved)} FTE`;
+    outputs.grossSavings.textContent = formatEuro.format(grossSavings);
+    outputs.monthlyCost.textContent = formatEuro.format(monthlyCost);
+    outputs.paybackMonths.textContent = `${formatDecimal.format(paybackMonths)} Monate`;
+    outputs.totalPotential.textContent = formatEuro.format(netSavings);
+  };
+
+  Object.values(inputs).forEach((input) => input.addEventListener("input", updateRoi));
+  updateRoi();
+});
+
 const contactEndpoint = window.EXEQWORK_CONTACT_ENDPOINT || "";
 
 document.querySelectorAll("[data-contact-form]").forEach((form) => {

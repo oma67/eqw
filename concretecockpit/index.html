@@ -40,6 +40,7 @@
             </p>
             <div class="hero-actions">
               <a class="btn btn-primary" href="../kontakt/#kontaktformular">Demo anfragen</a>
+              <a class="btn btn-secondary" href="#roi-rechner">ROI berechnen</a>
               <a class="btn btn-secondary" href="../sap-angebot-ki/">SAP Angebot mit KI</a>
               <a class="btn btn-secondary" href="https://concretecockpit.ai/">concretecockpit.ai</a>
             </div>
@@ -86,6 +87,78 @@
               Die KI übernimmt die Vorarbeit, Vertrieb und Kalkulation behalten die Kontrolle über Prüfung,
               Anpassung und Freigabe.
             </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section roi-section" id="roi-rechner" data-cc-roi>
+        <div class="container roi-grid reveal">
+          <div class="roi-copy">
+            <p class="eyebrow">ROI-Rechner</p>
+            <h2>Was bringt ein schnellerer Angebotsprozess?</h2>
+            <p>
+              Schätzen Sie mit typischen Angebotszahlen, wie viele Stunden
+              ConcreteCockpit im Jahr freispielen kann und wie der Effekt nach
+              Investitions- und Wartungskosten aussieht.
+            </p>
+          </div>
+          <div class="roi-calculator" aria-label="ConcreteCockpit ROI-Rechner">
+            <form class="roi-form">
+              <label>
+                <span>Leistungsverzeichnisse pro Jahr</span>
+                <input type="number" min="1" step="1" value="420" data-roi-input="requests" />
+              </label>
+              <label>
+                <span>Bearbeiter im Angebotsprozess</span>
+                <input type="number" min="1" step="1" value="4" data-roi-input="employees" />
+              </label>
+              <label>
+                <span>Ø Bearbeitungszeit je LV in Stunden</span>
+                <input type="number" min="0.1" step="0.1" value="2.5" data-roi-input="hours" />
+              </label>
+              <label>
+                <span>Interner Stundensatz</span>
+                <div class="input-prefix"><span>€</span><input type="number" min="1" step="5" value="75" data-roi-input="hourlyRate" /></div>
+              </label>
+            </form>
+            <div class="roi-results" aria-live="polite">
+              <div class="roi-result-main">
+                <span>Netto-Effekt pro Jahr</span>
+                <strong data-roi-output="totalPotential">€0</strong>
+              </div>
+              <div class="roi-result-grid">
+                <div>
+                  <span>Zeitersparnis</span>
+                  <strong data-roi-output="hoursSaved">0 h</strong>
+                </div>
+                <div>
+                  <span>Entlastung</span>
+                  <strong data-roi-output="fteSaved">0 FTE</strong>
+                </div>
+                <div>
+                  <span>Brutto-Einsparung</span>
+                  <strong data-roi-output="grossSavings">€0</strong>
+                </div>
+                <div>
+                  <span>Pro Bearbeiter/Woche</span>
+                  <strong data-roi-output="weeklyHours">0 h</strong>
+                </div>
+                <div>
+                  <span>Monatliche Kosten</span>
+                  <strong data-roi-output="monthlyCost">€666</strong>
+                </div>
+                <div>
+                  <span>Amortisation</span>
+                  <strong data-roi-output="paybackMonths">0 Monate</strong>
+                </div>
+              </div>
+              <p class="roi-note">
+                Annahmen: 20.000&nbsp;€ Initialkosten, 20&nbsp;% Wartung pro
+                Jahr, 5 Jahre Nutzung. Der manuelle Aufwand sinkt auf
+                20&nbsp;% des Ausgangswerts.
+              </p>
+              <a class="btn btn-primary" href="../kontakt/#kontaktformular">Eigene Zahlen besprechen</a>
+            </div>
           </div>
         </div>
       </section>
