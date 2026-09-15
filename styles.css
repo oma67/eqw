@@ -883,7 +883,7 @@ small,
   font-size: 14px;
 }
 
-  .footer-grid {
+.footer-grid {
   display: flex;
   justify-content: space-between;
   gap: 20px;
@@ -893,13 +893,36 @@ small,
   margin-bottom: 0;
 }
 
-.footer-grid div {
+.footer-grid div,
+.footer-social {
   display: flex;
   gap: 18px;
 }
 
+.footer-grid div {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-social {
+  align-items: center;
+  padding-left: 18px;
+  border-left: 1px solid var(--line);
+}
+
+.site-footer > .container > .footer-social {
+  margin-top: 12px;
+  padding-left: 0;
+  border-left: 0;
+}
+
 .footer-grid a {
   text-decoration: none;
+}
+
+.footer-social a {
+  color: var(--primary);
+  font-weight: 650;
 }
 
 .page-hero {

@@ -17,6 +17,46 @@ if (year) {
   year.textContent = new Date().getFullYear();
 }
 
+const socialLinks = [
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/@exeqworkgmbh1661",
+  },
+  {
+    label: "X",
+    href: "https://x.com/exeqwork",
+  },
+];
+
+document.querySelectorAll(".site-footer").forEach((footer) => {
+  if (footer.querySelector(".footer-social")) {
+    return;
+  }
+
+  const socialNav = document.createElement("nav");
+  socialNav.className = "footer-social";
+  socialNav.setAttribute("aria-label", "Social Media");
+
+  socialLinks.forEach(({ label, href }) => {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = label;
+    link.target = "_blank";
+    link.rel = "me noreferrer noopener";
+    socialNav.append(link);
+  });
+
+  const footerGrid = footer.querySelector(".footer-grid");
+  const footerLinks = footerGrid?.querySelector("div");
+  if (footerLinks) {
+    footerLinks.append(socialNav);
+  } else if (footerGrid) {
+    footerGrid.append(socialNav);
+  } else {
+    (footer.querySelector(".container") || footer).append(socialNav);
+  }
+});
+
 const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
