@@ -57,6 +57,32 @@ document.querySelectorAll(".site-footer").forEach((footer) => {
   }
 });
 
+document.querySelectorAll(".nav-links").forEach((nav) => {
+  if (nav.querySelector(".nav-social")) {
+    return;
+  }
+
+  const socialNav = document.createElement("span");
+  socialNav.className = "nav-social";
+  socialNav.setAttribute("aria-label", "Social Media");
+
+  socialLinks.forEach(({ label, href }) => {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = label;
+    link.target = "_blank";
+    link.rel = "me noreferrer noopener";
+    socialNav.append(link);
+  });
+
+  const languageSwitch = nav.querySelector(".language-switch");
+  if (languageSwitch) {
+    nav.insertBefore(socialNav, languageSwitch);
+  } else {
+    nav.append(socialNav);
+  }
+});
+
 const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {

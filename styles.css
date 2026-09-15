@@ -93,6 +93,29 @@ a {
   color: var(--text);
 }
 
+.nav-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-social a {
+  min-width: 30px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--primary);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.nav-social a:hover {
+  border-color: rgba(11, 99, 182, 0.45);
+  color: var(--primary-dark);
+}
+
 .language-switch {
   display: inline-flex;
   align-items: center;
