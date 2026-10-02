@@ -562,7 +562,7 @@ small,
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1px;
   margin-top: 34px;
   overflow: hidden;
