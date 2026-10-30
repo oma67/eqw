@@ -1495,6 +1495,9 @@ small,
   .cta-grid {
     grid-template-columns: 1fr;
     gap: 36px;
+  .metrics {
+    grid-auto-flow: row;
+  }  
   }
 
   .home-hero-grid {
