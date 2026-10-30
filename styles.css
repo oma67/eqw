@@ -55,7 +55,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 68px;
+  min-height: 56px;
 }
 
 .logo {
@@ -65,14 +65,14 @@ a {
 }
 
 .logo-image {
-  width: 200px;
+  width: 154px;
   height: auto;
   display: block;
 }
 
 .logo-mark {
-  width: 200px;
-  height: 49px;
+  width: 154px;
+  height: 38px;
   display: block;
   background: url("assets/brand/exeqwork-logo-full.png") center / contain no-repeat;
 }
@@ -277,7 +277,7 @@ h2 {
 
 h1 {
   margin-bottom: 22px;
-  font-size: clamp(34px, 4.2vw, 50px);
+  font-size: clamp(34px, 4.6vw, 54px);
   font-weight: 600;
 }
 
